@@ -1,19 +1,22 @@
 import { authValidator, login, register } from './controllers/AuthController.js';
 import { home } from './controllers/BaseController.js';
-import { depositFund, transferFund, withdrawFund } from './controllers/TransactionController.js';
+import { withdrawFund } from './controllers/TransactionController.js';
 import { Router } from 'express';
 import { Authenticate } from './middlewares/Authenticate.js';
+import { IsCustomer } from './middlewares/IsCustomer.js';
+import { IsMerchant } from './middlewares/IsMerchant.js';
 
 const routes = Router();
+
+// unauthenticated routes
 routes
     .get('/', home)
     .post('/register', authValidator('register'), register)
     .post('/login', login);
 
-routes.use('/wallet', Authenticate, Router()
-    .post('/deposit', depositFund)
-    .post('/withdraw', withdrawFund)
-    .post('/transfer', transferFund)
+// merchant routes
+routes.use('/merchant', Authenticate, IsMerchant, Router()
+    .get('/', home)
 );
 
 export default routes;
