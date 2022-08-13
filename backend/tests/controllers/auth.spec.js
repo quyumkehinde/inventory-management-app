@@ -41,25 +41,6 @@ describe('authentication', () => {
             expect(response.body.data.token).toBe('token');
             expect(response.body.success).toBe(true);
         });
-
-        
-        test('user get an error when password is empty', async () => {
-            const req = { body: { email: 'test@domain.com'} };
-            const response = await register(req, res);
-            expect(response.body.message).toBe('The password field is required');
-        });
-        
-        test('user get an error when email is empty', async () => {
-            const req = { body: { password: 'password'} };
-            const response = await register(req, res);
-            expect(response.body.message).toBe('The email field is required');
-        });
-
-        test('user get an error when email is invalid', async () => {
-            const req = { body: { email: 'invalidmail', password : 'password' } };
-            const response = await register(req, res);
-            expect(response.body.message).toBe('The email provided in invalid.');
-        });
     });
 
     describe('login', () => {
@@ -89,25 +70,6 @@ describe('authentication', () => {
             const response = await login(req, res);
             expect(response.body.message).toBe('Invalid username or password.');
             expect(response.body.success).toBe(false);
-        });
-
-        
-        test('user get an error when password is empty', async () => {
-            const req = { body: { email: 'test@domain.com'} };
-            const response = await login(req, res);
-            expect(response.body.message).toBe('The password field is required');
-        });
-        
-        test('user get an error when email is empty', async () => {
-            const req = { body: { password: 'password'} };
-            const response = await login(req, res);
-            expect(response.body.message).toBe('The email field is required');
-        });
-
-        test('user get an error when email is invalid', async () => {
-            const req = { body: { email: 'invalidmail', password : 'password' } };
-            const response = await login(req, res);
-            expect(response.body.message).toBe('The email provided in invalid.');
         });
     });
 })

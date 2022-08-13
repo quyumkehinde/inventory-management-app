@@ -11,8 +11,8 @@ export const checkPassword = async (password, hashedPassword) => {
     return await bcrypt.compare(password, hashedPassword);
 };
 
-export const generateJWT = (userId) => {
-    return jwt.sign({ id: userId }, config.JWT_SECRET, {
+export const generateJWT = (userId, userType) => {
+    return jwt.sign({ userId, userType }, config.JWT_SECRET, {
         expiresIn: config.JWT_EXPIRES_IN
     });
 };

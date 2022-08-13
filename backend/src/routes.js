@@ -1,4 +1,4 @@
-import { login, register } from './controllers/AuthController.js';
+import { authValidator, login, register } from './controllers/AuthController.js';
 import { home } from './controllers/BaseController.js';
 import { depositFund, transferFund, withdrawFund } from './controllers/TransactionController.js';
 import { Router } from 'express';
@@ -7,7 +7,7 @@ import { Authenticate } from './middlewares/Authenticate.js';
 const routes = Router();
 routes
     .get('/', home)
-    .post('/register', register)
+    .post('/register', authValidator('register'), register)
     .post('/login', login);
 
 routes.use('/wallet', Authenticate, Router()
