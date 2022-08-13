@@ -4,10 +4,6 @@ import { DEFAULT_ERROR_MESSAGE } from '../utils/constants.js';
 import { sendError, sendSuccess } from './BaseController.js';
 
 export const addItem = async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return sendError(res, errors.array()[0].msg);
-    }
     try {
         const {name, price, quantity, image_url, user: merchant} = req.body;
         const data = await createItem(name, price, merchant.id, quantity, image_url);
@@ -19,10 +15,6 @@ export const addItem = async (req, res) => {
 }
 
 export const editItem = async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return sendError(res, errors.array()[0].msg, 401);
-    }
     const {id, name, price, quantity, image_url, user: merchant} = req.body;
     const item = await findItemById(id);
     if (!item || item.merchant_id !== merchant.id) {

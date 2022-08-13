@@ -4,11 +4,6 @@ import { sendError, sendSuccess } from './BaseController.js';
 import { body, validationResult } from 'express-validator';
 
 export const register = async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return sendError(res, errors.array()[0].msg, 400);
-    }
-
     try {
         const { first_name, last_name, email, user_type, password } = req.body;
         const [userId] = await createUser(first_name, last_name, email, user_type, password);
@@ -25,11 +20,6 @@ export const register = async (req, res) => {
 };
 
 export const login = async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return sendError(res, errors.array()[0].msg);
-    }
-
     try {
         const user = await findUserByEmail(req.body.email);
         if (!user || !await checkPassword(req.body.password, user.password)) {

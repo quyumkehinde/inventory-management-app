@@ -6,6 +6,7 @@ import { Authenticate } from './middlewares/Authenticate.js';
 import { IsCustomer } from './middlewares/IsCustomer.js';
 import { IsMerchant } from './middlewares/IsMerchant.js';
 import { addItem, editItem, inventoryValidator } from './controllers/InventoryController.js';
+import { Validate } from './middlewares/Validate.js';
 
 const routes = Router();
 
@@ -17,8 +18,8 @@ routes
 
 // merchant routes
 routes.use('/merchant', Authenticate, IsMerchant, Router()
-    .post('/inventory', inventoryValidator('addItem'), addItem)
-    .put('/inventory', inventoryValidator('editItem'), editItem)
+    .post('/inventory', inventoryValidator('addItem'), Validate, addItem)
+    .put('/inventory', inventoryValidator('editItem'), Validate, editItem)
 );
 
 export default routes;
