@@ -5,6 +5,7 @@ import { Router } from 'express';
 import { Authenticate } from './middlewares/Authenticate.js';
 import { IsCustomer } from './middlewares/IsCustomer.js';
 import { IsMerchant } from './middlewares/IsMerchant.js';
+import { addItem, editItem, inventoryValidator } from './controllers/InventoryController.js';
 
 const routes = Router();
 
@@ -16,7 +17,8 @@ routes
 
 // merchant routes
 routes.use('/merchant', Authenticate, IsMerchant, Router()
-    .get('/', home)
+    .post('/inventory', inventoryValidator('addItem'), addItem)
+    .put('/inventory', inventoryValidator('editItem'), editItem)
 );
 
 export default routes;

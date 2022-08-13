@@ -15,9 +15,9 @@ export const register = async (req, res) => {
         return sendSuccess(res, 'Registration successful', {
             token: generateJWT(userId, user_type),
         });
-    } catch (err) {
-        console.log(err);
-        if (err.code === 'ER_DUP_ENTRY') {
+    } catch (e) {
+        console.log(e);
+        if (e.code === 'ER_DUP_ENTRY') {
             return sendError(res, 'User with email already exist.', 400);
         }
         return sendError(res, 'Error occured! Please try again.');
@@ -38,8 +38,8 @@ export const login = async (req, res) => {
         return sendSuccess(res, 'Successfully generated token.', {
             token: generateJWT(user.id, user.user_type),
         });
-    } catch (err) {
-        console.log(err);
+    } catch (e) {
+        console.log(e);
         return sendError(res, 'Error occured! Please try again later.');
     }
 };

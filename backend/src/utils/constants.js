@@ -1,0 +1,1 @@
+export const DEFAULT_ERROR_MESSAGE = 'Error Occured! Please try again later.';
