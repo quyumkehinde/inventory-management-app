@@ -2,20 +2,21 @@ import { createUser, findUserByEmail } from '../repositories/UserRepository.js';
 import { checkPassword, generateJWT } from '../utils/auth.js';
 import { sendError, sendSuccess } from './BaseController.js';
 import { body, validationResult } from 'express-validator';
+import { DEFAULT_ERROR_MESSAGE } from '../utils/constants.js';
 
 export const register = async (req, res) => {
     try {
         const { first_name, last_name, email, user_type, password } = req.body;
-        const [userId] = await createUser(first_name, last_name, email, user_type, password);
+        if (findUserByEmail(email)) {
+            return sendError(res, 'User with email already exist.', 400);
+        }
+        const user = await createUser(first_name, last_name, email, user_type, password);
         return sendSuccess(res, 'Registration successful', {
-            token: generateJWT(userId, user_type),
+            token: generateJWT(user.id, user.user_type),
         });
     } catch (e) {
         console.log(e);
-        if (e.code === 'ER_DUP_ENTRY') {
-            return sendError(res, 'User with email already exist.', 400);
-        }
-        return sendError(res, 'Error occured! Please try again.');
+        return sendError(res, DEFAULT_ERROR_MESSAGE);
     }
 };
 
@@ -30,7 +31,7 @@ export const login = async (req, res) => {
         });
     } catch (e) {
         console.log(e);
-        return sendError(res, 'Error occured! Please try again later.');
+        return sendError(res, DEFAULT_ERROR_MESSAGE);
     }
 };
 
