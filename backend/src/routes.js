@@ -7,6 +7,7 @@ import { IsCustomer } from './middlewares/IsCustomer.js';
 import { IsMerchant } from './middlewares/IsMerchant.js';
 import { addItem, deleteItem, editItem, fetchItem, fetchItems, inventoryValidator, seedItems } from './controllers/InventoryController.js';
 import { Validate } from './middlewares/Validate.js';
+import { createOrder, orderValidator } from './controllers/OrderController.js';
 
 const routes = Router();
 
@@ -28,7 +29,7 @@ routes.use('/merchant', Authenticate, IsMerchant, Router()
 
 // customer routes
 routes.use('/customer', Authenticate, IsCustomer, Router()
-    
+    .post('/order', orderValidator('createOrder'), createOrder)
 );
 
 export default routes;

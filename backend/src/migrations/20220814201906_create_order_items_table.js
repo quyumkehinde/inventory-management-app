@@ -12,7 +12,6 @@ export function up(knex) {
             .onDelete('cascade');
         t.bigInteger('item_id')
             .unsigned()
-            .nullable()
             .references('id')
             .inTable('inventory_items')
             .onDelete('set null');

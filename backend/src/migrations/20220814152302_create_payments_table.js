@@ -8,6 +8,11 @@ export function up(knex) {
     return knex.schema.createTable('payments', function (t) {
         t.bigIncrements('id').unsigned().primary();
         t.decimal('amount', 19, 4).notNullable();
+        t.bigInteger('order_id')
+            .unsigned()
+            .references('id')
+            .inTable('orders')
+            .onDelete('cascade');
         t.enum('method', PAYMENT_METHODS).notNullable();
         t.enum('status', PAYMENT_STATUSES).notNullable();
         t.timestamps(true, true);
