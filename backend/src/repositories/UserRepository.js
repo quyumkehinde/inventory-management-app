@@ -2,7 +2,7 @@ import { db } from '../config/Database.js';
 import { hashPassword } from '../utils/auth.js';
 
 export const createUser = async (firstName, lastName, email, userType, password) => {
-    cons [id] = await db('users').insert({
+    const [id] = await db('users').insert({
         first_name: firstName,
         last_name: lastName,
         email,

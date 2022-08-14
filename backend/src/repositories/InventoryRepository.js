@@ -21,6 +21,22 @@ export const updateItem = async (id, name, price, quantity, imageUrl) => {
     return findItemById(id);
 };
 
+export const deleteItem = async (id) => {
+    return db('inventory_items')
+        .where('id', id)
+        .delete();
+};
+
 export const findItemById = async (id) => {
-    return db('inventory_items').where('id', id).first();
+    return db('inventory_items')
+        .where('id', id)
+        .first();
+};
+
+export const fetchItems = async (merchantId) => {
+    let items = db('inventory_items');
+    if (merchantId) {
+        items.where('merchant_id', merchantId);
+    }
+    return items.select();
 };

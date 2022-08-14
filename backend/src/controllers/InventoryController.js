@@ -2,31 +2,53 @@ import { body, validationResult } from 'express-validator';
 import { createItem, findItemById, updateItem } from '../repositories/InventoryRepository.js';
 import { DEFAULT_ERROR_MESSAGE } from '../utils/constants.js';
 import { sendError, sendSuccess } from './BaseController.js';
+import { deleteItem as _deleteItem } from '../repositories/InventoryRepository.js';
+import { fetchItems as _fetchItems } from '../repositories/InventoryRepository.js';
 
 export const addItem = async (req, res) => {
     try {
-        const {name, price, quantity, image_url, user: merchant} = req.body;
+        const { name, price, quantity, image_url, user: merchant } = req.body;
         const data = await createItem(name, price, merchant.id, quantity, image_url);
-        return sendSuccess(res, data, 'Successfully created inventory item.')
+        return sendSuccess(res, 'Successfully created inventory item.', data)
     } catch (e) {
         console.log(e);
-        return sendError(res, DEFAULT_ERROR_MESSAGE, 500)
+        return sendError(res);
     }
 }
 
 export const editItem = async (req, res) => {
-    const {id, name, price, quantity, image_url, user: merchant} = req.body;
-    const item = await findItemById(id);
+    const { name, price, quantity, image_url, user: merchant } = req.body;
+    const item = await findItemById(req.params.id);
     if (!item || item.merchant_id !== merchant.id) {
         return sendError(res, 'The item ID is invalid.', 401);
     }
     try {
-        const data = await updateItem(id, name, price, quantity, image_url);
-        return sendSuccess(res, data, 'Successfully updated inventory item.')
+        const data = await updateItem(req.params.id, name, price, quantity, image_url);
+        return sendSuccess(res, 'Successfully updated inventory item.', data)
     } catch (e) {
         console.log(e);
-        return sendError(res, DEFAULT_ERROR_MESSAGE, 500)
+        return sendError(res)
     }
+}
+
+export const deleteItem = async (req, res) => {
+    const item = await findItemById(req.params.id);
+    if (!item || item.merchant_id !== req.body.user.id) {
+        return sendError(res, 'The item ID is invalid.', 401);
+    }
+    try {
+        const deleted = await _deleteItem(id);
+        const data = { deleted: Boolean(deleted) };
+        return sendSuccess(res, 'Successfully deleted inventory item.', data);
+    } catch (e) {
+        console.log(e);
+        return sendError(res)
+    }
+}
+
+export const fetchItems = async (req, res) => {
+    const data = await _fetchItems(req.query.merchant_id);
+    return sendSuccess(res, 'Successfully fetched inventory items', data);
 }
 
 export const inventoryValidator = (method) => {
