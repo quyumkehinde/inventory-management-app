@@ -1,9 +1,8 @@
-import { body, validationResult } from 'express-validator';
+import { body } from 'express-validator';
 import { createItem, findItemById, updateItem } from '../repositories/InventoryRepository.js';
-import { DEFAULT_ERROR_MESSAGE } from '../utils/constants.js';
+import { DB_SEED_INVENTORY_ITEMS } from '../utils/constants.js';
 import { sendError, sendSuccess } from './BaseController.js';
-import { deleteItem as _deleteItem } from '../repositories/InventoryRepository.js';
-import { fetchItems as _fetchItems } from '../repositories/InventoryRepository.js';
+import { deleteItem as _deleteItem, fetchItems as _fetchItems } from '../repositories/InventoryRepository.js';
 
 export const addItem = async (req, res) => {
     try {
@@ -49,6 +48,28 @@ export const deleteItem = async (req, res) => {
 export const fetchItems = async (req, res) => {
     const data = await _fetchItems(req.query.merchant_id);
     return sendSuccess(res, 'Successfully fetched inventory items', data);
+}
+
+export const seedItems = async (req, res) => {
+    try {
+        const data = { items: [] }
+        for (let i = 0; i < DB_SEED_INVENTORY_ITEMS.length; i++) {
+            const seedItem = DB_SEED_INVENTORY_ITEMS[i];
+            const item = await createItem(
+                seedItem.name,
+                seedItem.description,
+                seedItem.price,
+                req.body.user.id,
+                seedItem.quantity,
+                seedItem.image_url
+            );
+            data.items.push(item);
+        }
+        return sendSuccess(res, 'Successfully added dummy inventory items.', data)
+    } catch (e) {
+        console.log(e);
+        return sendError(res);
+    }
 }
 
 export const inventoryValidator = (method) => {
