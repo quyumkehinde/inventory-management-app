@@ -7,8 +7,8 @@ import { fetchItems as _fetchItems } from '../repositories/InventoryRepository.j
 
 export const addItem = async (req, res) => {
     try {
-        const { name, price, quantity, image_url, user: merchant } = req.body;
-        const data = await createItem(name, price, merchant.id, quantity, image_url);
+        const { name, description, price, quantity, image_url, user: merchant } = req.body;
+        const data = await createItem(name, description, price, merchant.id, quantity, image_url);
         return sendSuccess(res, 'Successfully created inventory item.', data)
     } catch (e) {
         console.log(e);
@@ -17,13 +17,13 @@ export const addItem = async (req, res) => {
 }
 
 export const editItem = async (req, res) => {
-    const { name, price, quantity, image_url, user: merchant } = req.body;
+    const { name, description, price, quantity, image_url, user: merchant } = req.body;
     const item = await findItemById(req.params.id);
     if (!item || item.merchant_id !== merchant.id) {
         return sendError(res, 'The item ID is invalid.', 401);
     }
     try {
-        const data = await updateItem(req.params.id, name, price, quantity, image_url);
+        const data = await updateItem(req.params.id, name, description, price, quantity, image_url);
         return sendSuccess(res, 'Successfully updated inventory item.', data)
     } catch (e) {
         console.log(e);

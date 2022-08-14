@@ -1,8 +1,9 @@
 import { db } from '../config/Database.js';
 
-export const createItem = async (name, price, merchantId, quantity, imageUrl) => {
+export const createItem = async (name, description, price, merchantId, quantity, imageUrl) => {
     const [id] = await db('inventory_items').insert({
         name,
+        description,
         price,
         merchant_id: merchantId,
         quantity,
@@ -11,9 +12,10 @@ export const createItem = async (name, price, merchantId, quantity, imageUrl) =>
     return findItemById(id);
 };
 
-export const updateItem = async (id, name, price, quantity, imageUrl) => {
+export const updateItem = async (id, name, description, price, quantity, imageUrl) => {
     await db('inventory_items').update({
         name,
+        description,
         price,
         quantity,
         image_url: imageUrl,
