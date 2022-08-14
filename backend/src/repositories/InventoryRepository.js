@@ -9,7 +9,7 @@ export const createItem = async (name, description, price, merchantId, quantity,
         quantity,
         image_url: imageUrl,
     });
-    return findItemById(id);
+    return fetchItemById(id);
 };
 
 export const updateItem = async (id, name, description, price, quantity, imageUrl) => {
@@ -20,7 +20,7 @@ export const updateItem = async (id, name, description, price, quantity, imageUr
         quantity,
         image_url: imageUrl,
     }).where('id', id);
-    return findItemById(id);
+    return fetchItemById(id);
 };
 
 export const deleteItem = async (id) => {
@@ -29,7 +29,7 @@ export const deleteItem = async (id) => {
         .delete();
 };
 
-export const findItemById = async (id) => {
+export const fetchItemById = async (id) => {
     return db('inventory_items')
         .where('id', id)
         .first();

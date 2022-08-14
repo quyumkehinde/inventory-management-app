@@ -5,7 +5,7 @@ import { Router } from 'express';
 import { Authenticate } from './middlewares/Authenticate.js';
 import { IsCustomer } from './middlewares/IsCustomer.js';
 import { IsMerchant } from './middlewares/IsMerchant.js';
-import { addItem, deleteItem, editItem, fetchItems, inventoryValidator, seedItems } from './controllers/InventoryController.js';
+import { addItem, deleteItem, editItem, fetchItem, fetchItems, inventoryValidator, seedItems } from './controllers/InventoryController.js';
 import { Validate } from './middlewares/Validate.js';
 
 const routes = Router();
@@ -14,15 +14,21 @@ const routes = Router();
 routes
     .get('/', home)
     .post('/register', authValidator('register'), register)
-    .post('/login', login);
+    .post('/login', login)
+    .get('/inventory', fetchItems)
+    .get('/inventory/:id', fetchItem)
 
 // merchant routes
 routes.use('/merchant', Authenticate, IsMerchant, Router()
-    .get('/inventory', fetchItems)
     .post('/inventory', inventoryValidator('addItem'), Validate, addItem)
     .post('/inventory/seed', seedItems)
     .put('/inventory/:id', inventoryValidator('editItem'), Validate, editItem)
     .delete('/inventory/:id', deleteItem)
+);
+
+// customer routes
+routes.use('/customer', Authenticate, IsCustomer, Router()
+    
 );
 
 export default routes;

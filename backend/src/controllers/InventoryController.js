@@ -1,5 +1,5 @@
-import { body } from 'express-validator';
-import { createItem, findItemById, updateItem } from '../repositories/InventoryRepository.js';
+import { body, param } from 'express-validator';
+import { createItem, fetchItemById, updateItem } from '../repositories/InventoryRepository.js';
 import { DB_SEED_INVENTORY_ITEMS } from '../utils/constants.js';
 import { sendError, sendSuccess } from './BaseController.js';
 import { deleteItem as _deleteItem, fetchItems as _fetchItems } from '../repositories/InventoryRepository.js';
@@ -17,7 +17,7 @@ export const addItem = async (req, res) => {
 
 export const editItem = async (req, res) => {
     const { name, description, price, quantity, image_url, user: merchant } = req.body;
-    const item = await findItemById(req.params.id);
+    const item = await fetchItemById(req.params.id);
     if (!item || item.merchant_id !== merchant.id) {
         return sendError(res, 'The item ID is invalid.', 401);
     }
@@ -31,9 +31,9 @@ export const editItem = async (req, res) => {
 }
 
 export const deleteItem = async (req, res) => {
-    const item = await findItemById(req.params.id);
+    const item = await fetchItemById(req.params.id);
     if (!item || item.merchant_id !== req.body.user.id) {
-        return sendError(res, 'The item ID is invalid.', 401);
+        return sendError(res, 'The item ID is invalid.', 400);
     }
     try {
         const deleted = await _deleteItem(id);
@@ -47,7 +47,15 @@ export const deleteItem = async (req, res) => {
 
 export const fetchItems = async (req, res) => {
     const data = await _fetchItems(req.query.merchant_id);
-    return sendSuccess(res, 'Successfully fetched inventory items', data);
+    return sendSuccess(res, 'Successfully fetched inventory items.', data);
+}
+
+export const fetchItem = async (req, res) => {
+    const data = await fetchItemById(req.params.id);
+    if (!data) {
+        return sendError(res, 'The item ID is invalid.', 400);
+    }
+    return sendSuccess(res, 'Successfully fetched inventory item.', data);
 }
 
 export const seedItems = async (req, res) => {
