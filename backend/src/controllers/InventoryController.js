@@ -1,4 +1,4 @@
-import { body, param } from 'express-validator';
+import { body } from 'express-validator';
 import { createItem, fetchItemById, updateItem } from '../repositories/InventoryRepository.js';
 import { DB_SEED_INVENTORY_ITEMS } from '../utils/constants.js';
 import { sendError, sendSuccess } from './BaseController.js';
