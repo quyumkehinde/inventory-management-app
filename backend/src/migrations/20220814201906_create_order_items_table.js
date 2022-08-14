@@ -3,22 +3,20 @@
  * @returns { Promise<void> }
  */
 export function up(knex) {
-    return knex.schema.createTable('orders', function (t) {
+     return knex.schema.createTable('order_items', function (t) {
         t.bigIncrements('id').unsigned().primary();
-        t.decimal('amount', 19, 4).notNullable();
-        t.bigInteger('user_id')
+        t.bigInteger('order_id')
+            .unsigned()
+            .references('id')
+            .inTable('orders')
+            .onDelete('cascade');
+        t.bigInteger('item_id')
             .unsigned()
             .nullable()
             .references('id')
-            .inTable('users')
+            .inTable('inventory_items')
             .onDelete('set null');
-        t.bigInteger('payment_id')
-            .unsigned()
-            .nullable()
-            .references('id')
-            .inTable('payments')
-            .onDelete('set null');
-        t.text('address').notNullable();
+        t.integer('quantity').notNullable();
         t.timestamps(true, true);
     });
 };
@@ -28,5 +26,5 @@ export function up(knex) {
  * @returns { Promise<void> }
  */
 export function down(knex) {
-    return knex.schema.dropTable('orders');
+    return knex.schema.dropTable('order_items');
 };

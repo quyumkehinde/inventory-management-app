@@ -3,22 +3,18 @@
  * @returns { Promise<void> }
  */
 export function up(knex) {
-    return knex.schema.createTable('orders', function (t) {
+    return knex.schema.createTable('user_cards', function (t) {
         t.bigIncrements('id').unsigned().primary();
-        t.decimal('amount', 19, 4).notNullable();
         t.bigInteger('user_id')
             .unsigned()
-            .nullable()
+            .notNullable()
             .references('id')
             .inTable('users')
-            .onDelete('set null');
-        t.bigInteger('payment_id')
-            .unsigned()
-            .nullable()
-            .references('id')
-            .inTable('payments')
-            .onDelete('set null');
-        t.text('address').notNullable();
+            .onDelete('cascade');
+            // the data types are strings because we are saving the encrypted value.
+            t.string('card_number').notNullable();
+            t.string('expiry_date').notNullable();
+            // not storing security code because we are not allowed, by law, to save the information.
         t.timestamps(true, true);
     });
 };
