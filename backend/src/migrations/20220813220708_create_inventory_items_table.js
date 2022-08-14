@@ -6,7 +6,7 @@ export function up(knex) {
     return knex.schema.createTable('inventory_items', function (t) {
         t.bigIncrements('id').unsigned().primary();
         t.string('name').notNullable();
-        t.text('description');
+        t.text('description').nullable();
         t.decimal('price', 19, 4).notNullable();
         t.bigInteger('merchant_id')
             .unsigned()
