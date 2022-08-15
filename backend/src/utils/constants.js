@@ -3,6 +3,7 @@ export const PAYMENT_METHODS = ['card'];
 export const INVOICE_STATUSES = ['pending', 'paid'];
 export const INVOICE_STATUS_PENDING = 'pending';
 export const INVOICE_STATUS_PAID = 'paid';
+export const MAIL_SUCCESSFUL_PAYMENT_SUBJECT = 'Invoice payment successful - Dukka';
 
 export const DB_SEED_INVENTORY_ITEMS = [
     {

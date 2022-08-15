@@ -1,10 +1,11 @@
 import { body, param } from "express-validator";
 import { findOrderById } from "../repositories/OrderRepository.js";
-import { PAYMENT_METHODS, INVOICE_STATUSES, INVOICE_STATUS_PAID, INVOICE_STATUS_PENDING } from "../utils/constants.js";
+import { PAYMENT_METHODS, INVOICE_STATUSES, INVOICE_STATUS_PAID, INVOICE_STATUS_PENDING, MAIL_SUCCESSFUL_PAYMENT_SUBJECT } from "../utils/constants.js";
 import { createInvoice as _createInvoice, findInvoiceById, findInvoiceByOrderId, updateInvoice } from "../repositories/InvoiceRepository.js";
 import { sendError, sendSuccess } from "./BaseController.js";
 import { fetchInvoices as _fetchInvoices } from "../repositories/InvoiceRepository.js";
 import { createUserCard, findCardById } from "../repositories/UserCardRepository.js";
+import { mail } from "../config/Mail.js";
 
 export const createInvoice = async (req, res) => {
     try {
@@ -39,6 +40,16 @@ export const payInvoiceNewCard = async (req, res) => {
             await createUserCard(user.id, card_number, expiry_month, expiry_year, security_code);
         }
         const receipt = await updateInvoice(invoice.id, INVOICE_STATUS_PAID);
+        const mailOptions = {
+            to: user.email,
+            subject: MAIL_SUCCESSFUL_PAYMENT_SUBJECT,
+            text: `Successfully paid ${invoice.amount} for invoice #${invoice.id}`
+        }
+        mail.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                console.log(error);
+            }
+        });
         return sendSuccess(res, 'Successfully paid for item', receipt);
     } catch (e) {
         console.log(e)
