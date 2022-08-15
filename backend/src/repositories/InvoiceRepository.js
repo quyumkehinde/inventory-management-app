@@ -24,6 +24,7 @@ export const findInvoiceById = async (id) => {
 };
 
 export const fetchInvoices = async (userId, status) => {
+    // Selecting only invoices with orders that belongs to the user.
     const orderIds = db('orders')
         .where('user_id', userId)
         .select('id');

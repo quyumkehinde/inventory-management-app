@@ -13,13 +13,9 @@ export const createItem = async (name, description, price, merchantId, quantity,
 };
 
 export const updateItem = async (id, name, description, price, quantity, imageUrl) => {
-    await db('inventory_items').update({
-        name,
-        description,
-        price,
-        quantity,
-        image_url: imageUrl,
-    }).where('id', id);
+    await db('inventory_items')
+        .update({ name, description, price, quantity, image_url: imageUrl})
+        .where('id', id);
     return fetchItemById(id);
 };
 

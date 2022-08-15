@@ -11,6 +11,7 @@ export function up(knex) {
             .inTable('users')
             .onDelete('set null');
         t.decimal('amount', 19, 4).notNullable();
+        // The delivery address for the order
         t.text('address').notNullable();
         t.timestamps(true, true);
     });

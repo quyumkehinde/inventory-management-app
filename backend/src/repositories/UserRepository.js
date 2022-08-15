@@ -13,29 +13,13 @@ export const createUser = async (firstName, lastName, email, userType, password)
 };
 
 export const findUserByEmail = async (email) => {
-    return db('users').where('email', email).first();
+    return db('users')
+        .where('email', email)
+        .first();
 };
 
-export const findUserById = async (id, trx) => {
-    let response = db('users')
+export const findUserById = async (id) => {
+    return db('users')
         .where('id', id)
         .first();
-    if (trx) response = response.transacting(trx);
-    return response;
-};
-
-export const incrementUserBalance = async (id, amount, trx) => {
-    let response = db('users')
-        .where('id', id)
-        .increment('account_balance', amount);
-    if (trx) response = response.transacting(trx);
-    return response;
-};
-
-export const decrementUserBalance = async (id, amount, trx) => {
-    let response = db('users')
-        .where('id', id)
-        .decrement('account_balance', amount);
-    if (trx) response = response.transacting(trx);
-    return response;
 };

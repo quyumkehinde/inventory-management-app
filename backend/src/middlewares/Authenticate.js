@@ -8,6 +8,7 @@ export const Authenticate = async (req, res, next) => {
         return sendError(res, 'Unauthorized!', 401);
     }
     const { userId } = decryptJWT(token.split(' ')[1]);
+    // push the user data to the request body
     req.body.user = await findUserById(userId);
     next();
 };

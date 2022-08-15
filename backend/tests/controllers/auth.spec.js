@@ -32,10 +32,12 @@ describe('authentication', () => {
     describe('registration', () => {
         test('user can create an account', async () => {
             const req = { body: { email: 'test@domain.com', password : 'password' } };
+            jest.spyOn(UserRepository, 'findUserByEmail')
+                .mockReturnValueOnce(new Promise(resolve => resolve(undefined)));
             jest.spyOn(UserRepository, 'createUser')
-                .mockImplementationOnce(() => [1]);
+                .mockReturnValueOnce(new Promise(resolve => resolve([1])));
             jest.spyOn(auth, 'generateJWT')
-                .mockImplementationOnce(string => 'token');
+                .mockReturnValueOnce('token');
 
             const response = await register(req, res);
             expect(response.body.data.token).toBe('token');
@@ -47,11 +49,11 @@ describe('authentication', () => {
         test('user can generate token', async () => {
             const req = { body: { email: 'test@domain.com', password : 'password' } };
             jest.spyOn(UserRepository, 'findUserByEmail')
-                .mockImplementationOnce(() => new Promise(resolve => resolve(user)));
+                .mockReturnValueOnce(new Promise(resolve => resolve(user)));
             jest.spyOn(auth, 'checkPassword')
-                .mockImplementationOnce(() => new Promise(resolve => resolve(true)));
+                .mockReturnValueOnce(new Promise(resolve => resolve(true)));
             jest.spyOn(auth, 'generateJWT')
-                .mockImplementationOnce(string => 'token');
+                .mockReturnValueOnce('token');
 
             const response = await login(req, res);
             expect(response.body.data.token).toBe('token');
@@ -61,11 +63,11 @@ describe('authentication', () => {
         test('user get an error for incorrect credentials', async () => {
             const req = { body: { email: 'test@domain.com', password : 'wrongPassword' } };
             jest.spyOn(UserRepository, 'findUserByEmail')
-                .mockImplementationOnce(() => new Promise(resolve => resolve(user)));
+                .mockReturnValueOnce(new Promise(resolve => resolve(user)));
             jest.spyOn(auth, 'checkPassword')
-                .mockImplementationOnce(() => new Promise(resolve => resolve(false)));
+                .mockReturnValueOnce(new Promise(resolve => resolve(false)));
             jest.spyOn(auth, 'generateJWT')
-                .mockImplementationOnce(string => 'token');
+                .mockReturnValueOnce('token');
 
             const response = await login(req, res);
             expect(response.body.message).toBe('Invalid username or password.');
