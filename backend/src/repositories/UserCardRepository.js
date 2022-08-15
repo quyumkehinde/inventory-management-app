@@ -13,11 +13,18 @@ export const createUserCard = async (userId, cardNumber, expiryMonth, expiryYear
 export const findCardById = async (id) => {
     return db('user_cards')
         .where('id', id)
-        .select(['id', 'card_number'])
+        .select(['user_id', 'id', 'card_number'])
         .first();
 };
 
 export const fetchCards = async (userId) => {
-    return db('user_cards')
-        .where('user_id', userId);
+    const encryptedCards = await db('user_cards')
+        .where('user_id', userId)
+        .select(['id', 'card_number']);
+    // decrypt card number and replace it with the card's last 4 numbers
+    return encryptedCards.map(card => {
+        const cardNumber = decrypt(card.card_number);
+        card.card_number = cardNumber.substring(cardNumber.length - 4);
+        return card;
+    });
 }

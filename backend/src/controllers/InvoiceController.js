@@ -4,7 +4,7 @@ import { PAYMENT_METHODS, INVOICE_STATUSES, INVOICE_STATUS_PAID, INVOICE_STATUS_
 import { createInvoice as _createInvoice, findInvoiceById, findInvoiceByOrderId, updateInvoice } from "../repositories/InvoiceRepository.js";
 import { sendError, sendSuccess } from "./BaseController.js";
 import { fetchInvoices as _fetchInvoices } from "../repositories/InvoiceRepository.js";
-import { createUserCard } from "../repositories/UserCardRepository.js";
+import { createUserCard, findCardById } from "../repositories/UserCardRepository.js";
 
 export const createInvoice = async (req, res) => {
     try {
@@ -21,7 +21,7 @@ export const createInvoice = async (req, res) => {
     }
 }
 
-export const payInvoice = async (req, res) => {
+export const payInvoiceNewCard = async (req, res) => {
     try {
         const invoice = await findInvoiceById(req.params.id);
         if (!invoice) {
@@ -32,10 +32,35 @@ export const payInvoice = async (req, res) => {
         }
         const { card_number, expiry_month, expiry_year, security_code, user } = req.body;
         // NOTE: In production code, some logic to debit card goes here.
-        // We would typically integrate with a payment provider like Flutterwave / Paystack
+        // We would typically integrate with a payment provider like Flutterwave, Paystack, etc
         // to handle payment. We shouldn't be storing users' card details unless we have the appropriate
         // cerifications to do so.
         await createUserCard(user.id, card_number, expiry_month, expiry_year, security_code);
+        const receipt = await updateInvoice(invoice.id, INVOICE_STATUS_PAID);
+        return sendSuccess(res, 'Successfully paid for item', receipt);
+    } catch (e) {
+        console.log(e)
+        return sendError(res);
+    }
+}
+
+export const payInvoiceSavedCard = async (req, res) => {
+    try {
+        const invoice = await findInvoiceById(req.params.id);
+        if (!invoice) {
+            return sendError(res, 'The invoice ID is invalid.', 400);
+        }
+        if (invoice.status === INVOICE_STATUS_PAID) {
+            return sendError(res, 'The invoice has already been paid!', 400);
+        }
+        const { card_id, user } = req.body;
+        const card = await findCardById(card_id);
+        if (!card || card.user_id !== user.id) {
+            return sendError(res, 'The card ID is invalid!', 400);
+        }
+        // NOTE: In production code, some logic to debit card goes here.
+        // We would typically integrate with a payment provider like Flutterwave, Paystack, etc
+        // to handle payment.
         const receipt = await updateInvoice(invoice.id, INVOICE_STATUS_PAID);
         return sendSuccess(res, 'Successfully paid for item', receipt);
     } catch (e) {
@@ -69,7 +94,7 @@ export const invoiceValidator = (method) => {
                 body('payment_method', 'The payment_method field is required.').exists(),
                 body('payment_method', 'Please provide a valid payment method').isIn(PAYMENT_METHODS),
             ];
-        case 'payInvoice':
+        case 'payInvoiceNewCard':
             return [
                 body('card_number')
                     .exists()
@@ -110,11 +135,15 @@ export const invoiceValidator = (method) => {
                         return true;
                     }),                
             ];
+        case 'payInvoiceSavedCard':
+            return [
+                body('card_id', 'The card id field is required.').exists()
+            ];
         case 'fetchInvoices':
             return [
                 param('status', 'The provided status is invalid.')
                     .optional()
                     .isIn(INVOICE_STATUSES),
-            ]
+            ];
     }
 }

@@ -7,7 +7,8 @@ import { IsMerchant } from './middlewares/IsMerchant.js';
 import { addItem, deleteItem, editItem, fetchItem, fetchItems, inventoryValidator, seedItems } from './controllers/InventoryController.js';
 import { Validate } from './middlewares/Validate.js';
 import { createOrder, orderValidator } from './controllers/OrderController.js';
-import { createInvoice, fetchInvoices, invoiceValidator, payInvoice } from './controllers/InvoiceController.js';
+import { createInvoice, fetchInvoices, invoiceValidator, payInvoiceNewCard, payInvoiceSavedCard } from './controllers/InvoiceController.js';
+import { fetchCards } from './controllers/UserCardsController.js';
 
 const routes = Router();
 
@@ -32,7 +33,9 @@ routes.use('/customer', Authenticate, IsCustomer, Router()
     .post('/order', orderValidator('createOrder'), Validate, createOrder)
     .get('/invoice', invoiceValidator('fetchInvoices'), Validate, fetchInvoices)
     .post('/invoice', invoiceValidator('createInvoice'), Validate, createInvoice)
-    .post('/invoice/:id/pay', invoiceValidator('payInvoice'), Validate, payInvoice)
+    .post('/invoice/:id/pay-with-new-card', invoiceValidator('payInvoiceNewCard'), Validate, payInvoiceNewCard)
+    .post('/invoice/:id/pay-with-saved-card', invoiceValidator('payInvoiceSavedCard'), Validate, payInvoiceSavedCard)
+    .get('/cards', fetchCards)
 );
 
 export default routes;
