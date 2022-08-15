@@ -9,6 +9,7 @@ export const createOrder = async (req, res) => {
     const { items, address, user } = req.body;
     try {
         let orderAmount = 0;
+        // Get the prices of items and sum up to get the total order amount
         for (let i = 0; i < items.length; i++) {
             const price = (await fetchItemById(items[i].id)).price;
             orderAmount += (price * items[i].quantity);
