@@ -1,4 +1,4 @@
-import { PAYMENT_METHODS, PAYMENT_STATUSES } from '../utils/constants.js';
+import { PAYMENT_METHODS, INVOICE_STATUSES } from '../utils/constants.js';
 
 /**
  * @param { import("knex").Knex } knex
@@ -14,7 +14,7 @@ export function up(knex) {
             .inTable('orders')
             .onDelete('cascade');
         t.enum('payment_method', PAYMENT_METHODS).notNullable();
-        t.enum('status', PAYMENT_STATUSES).notNullable();
+        t.enum('status', INVOICE_STATUSES).notNullable();
         t.timestamps(true, true);
     });
 };
