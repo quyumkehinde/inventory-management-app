@@ -3,6 +3,7 @@ import { sendError, sendSuccess } from './BaseController.js';
 import { createOrder as _createOrder } from "../repositories/OrderRepository.js";
 import { fetchItemById } from "../repositories/InventoryRepository.js";
 import { createOrderItem } from "../repositories/OrderItemRepository.js";
+import { logger } from "../config/Log.js";
 
 export const createOrder = async (req, res) => {
     const { items, address, user } = req.body;
@@ -17,8 +18,8 @@ export const createOrder = async (req, res) => {
             await createOrderItem(order.id, item.id, item.quantity);
         });
         return sendSuccess(res, 'Successfully created order.', order);
-    } catch (e) {
-        console.log(e)
+    } catch (error) {
+        logger.error('Error occured while creating order', { error, req })
         return sendError(res);
     }
 }

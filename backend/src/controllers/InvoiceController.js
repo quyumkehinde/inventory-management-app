@@ -6,6 +6,7 @@ import { sendError, sendSuccess } from "./BaseController.js";
 import { fetchInvoices as _fetchInvoices } from "../repositories/InvoiceRepository.js";
 import { createUserCard, findCardById } from "../repositories/UserCardRepository.js";
 import { mail } from "../config/Mail.js";
+import { logger } from "../config/Log.js";
 
 export const createInvoice = async (req, res) => {
     try {
@@ -16,9 +17,9 @@ export const createInvoice = async (req, res) => {
         const { amount } = await findOrderById(orderId);
         const invoice = await _createInvoice(orderId, amount, paymentMethod, INVOICE_STATUS_PENDING);
         return sendSuccess(res, 'Successfully generated invoice invoice.', invoice)
-    } catch (e) {
-        console.log(e)
-        return sendError(res)
+    } catch (error) {
+        logger.error('Error occured while creating invoice', { error, req })
+        return sendError(res);
     }
 }
 
@@ -40,19 +41,10 @@ export const payInvoiceNewCard = async (req, res) => {
             await createUserCard(user.id, card_number, expiry_month, expiry_year, security_code);
         }
         const receipt = await updateInvoice(invoice.id, INVOICE_STATUS_PAID);
-        const mailOptions = {
-            to: user.email,
-            subject: MAIL_SUCCESSFUL_PAYMENT_SUBJECT,
-            text: `Successfully paid ${invoice.amount} for invoice #${invoice.id}`
-        }
-        mail.sendMail(mailOptions, (error, info) => {
-            if (error) {
-                console.log(error);
-            }
-        });
+        sendPaymentSuccessMail(user, invoice);
         return sendSuccess(res, 'Successfully paid for item', receipt);
-    } catch (e) {
-        console.log(e)
+    } catch (error) {
+        logger.error('Error occured while processing transaction.', { error, req })
         return sendError(res);
     }
 }
@@ -75,9 +67,10 @@ export const payInvoiceSavedCard = async (req, res) => {
         // We would typically integrate with a payment provider like Flutterwave, Paystack, etc
         // to handle payment.
         const receipt = await updateInvoice(invoice.id, INVOICE_STATUS_PAID);
+        sendPaymentSuccessMail(user, invoice);
         return sendSuccess(res, 'Successfully paid for item', receipt);
-    } catch (e) {
-        console.log(e)
+    } catch (error) {
+        logger.error('Error occured while processing transaction.', { error, req })
         return sendError(res);
     }
 }
@@ -86,10 +79,23 @@ export const fetchInvoices = async (req, res) => {
     try {
         const invoices = await _fetchInvoices(req.body.user.id, req.query.status);
         return sendSuccess(res, 'Successfully fetched invoices.', invoices);
-    } catch (e) {
-        console.log(e)
+    } catch (error) {
+        logger.error('Error occured while fetching invoices.', { error, req })
         return sendError(res);
     }
+}
+
+const sendPaymentSuccessMail = (user, invoice) => {
+    const mailOptions = {
+        to: user.email,
+        subject: MAIL_SUCCESSFUL_PAYMENT_SUBJECT,
+        text: `Successfully paid ${invoice.amount} for invoice #${invoice.id}`
+    }
+    mail.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            logger.error('Error occured while sending mail', { error });
+        }
+    });
 }
 
 export const invoiceValidator = (method) => {

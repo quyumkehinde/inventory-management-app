@@ -3,14 +3,15 @@ import { createItem, fetchItemById, updateItem } from '../repositories/Inventory
 import { DB_SEED_INVENTORY_ITEMS } from '../utils/constants.js';
 import { sendError, sendSuccess } from './BaseController.js';
 import { deleteItem as _deleteItem, fetchItems as _fetchItems } from '../repositories/InventoryRepository.js';
+import { logger } from '../config/Log.js';
 
 export const addItem = async (req, res) => {
     try {
         const { name, description, price, quantity, image_url, user: merchant } = req.body;
         const data = await createItem(name, description, price, merchant.id, quantity, image_url);
         return sendSuccess(res, 'Successfully created inventory item.', data)
-    } catch (e) {
-        console.log(e);
+    } catch (error) {
+        logger.error('Error occured while adding item', { error, req })
         return sendError(res);
     }
 }
@@ -24,9 +25,9 @@ export const editItem = async (req, res) => {
     try {
         const data = await updateItem(req.params.id, name, description, price, quantity, image_url);
         return sendSuccess(res, 'Successfully updated inventory item.', data)
-    } catch (e) {
-        console.log(e);
-        return sendError(res)
+    } catch (error) {
+        logger.error('Error occured while updating item', { error, req })
+        return sendError(res);
     }
 }
 
@@ -39,9 +40,9 @@ export const deleteItem = async (req, res) => {
         const deleted = await _deleteItem(id);
         const data = { deleted: Boolean(deleted) };
         return sendSuccess(res, 'Successfully deleted inventory item.', data);
-    } catch (e) {
-        console.log(e);
-        return sendError(res)
+    } catch (error) {
+        logger.error('Error occured while deleting item', { error, req })
+        return sendError(res);
     }
 }
 
@@ -74,8 +75,8 @@ export const seedItems = async (req, res) => {
             data.items.push(item);
         }
         return sendSuccess(res, 'Successfully added dummy inventory items.', data)
-    } catch (e) {
-        console.log(e);
+    } catch (error) {
+        logger.error('Error occured while generating seed items', { error, req })
         return sendError(res);
     }
 }

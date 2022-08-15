@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import config from '../config.js';
+import { logger } from '../config/Log.js';
 
 export const hashPassword = async (password) => {
     const salt = await bcrypt.genSalt(10);
@@ -32,9 +33,9 @@ export const isValidBearerToken = (token) => {
         if (iat > timeStamp || exp < timeStamp) {
             return false;
         }
-    } catch (err) {
-        console.log(err);
-        return false;
+    } catch (error) {
+        logger.error('Error occured while validating token.', { error, req })
+        return sendError(res);
     }
     return true;
 };

@@ -2,7 +2,7 @@ import { createUser, findUserByEmail } from '../repositories/UserRepository.js';
 import { checkPassword, generateJWT } from '../utils/auth.js';
 import { sendError, sendSuccess } from './BaseController.js';
 import { body } from 'express-validator';
-import { DEFAULT_ERROR_MESSAGE } from '../utils/constants.js';
+import { logger } from '../config/Log.js';
 
 export const register = async (req, res) => {
     try {
@@ -14,8 +14,8 @@ export const register = async (req, res) => {
         return sendSuccess(res, 'Registration successful', {
             token: generateJWT(user.id, user.user_type),
         });
-    } catch (e) {
-        console.log(e);
+    } catch (error) {
+        logger.error('Error occured while signing up', { error, req })
         return sendError(res);
     }
 };
@@ -29,8 +29,8 @@ export const login = async (req, res) => {
         return sendSuccess(res, 'Successfully generated token.', {
             token: generateJWT(user.id, user.user_type),
         });
-    } catch (e) {
-        console.log(e);
+    } catch (error) {
+        logger.error('Error occured while generating token', { error, req })
         return sendError(res);
     }
 };
