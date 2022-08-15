@@ -11,10 +11,10 @@ export function up(knex) {
             .references('id')
             .inTable('users')
             .onDelete('cascade');
-            // the data types are strings because we are saving the encrypted value.
-            t.string('card_number').notNullable();
-            t.string('expiry_date').notNullable();
-            // not storing security code because we are not allowed, by law, to save the information.
+        // the data types are strings because we are saving the encrypted value.
+        t.string('card_number').notNullable();
+        t.string('expiry_date').notNullable();
+        t.string('security_code').notNullable();
         t.timestamps(true, true);
     });
 };

@@ -4,6 +4,7 @@ import { PAYMENT_METHODS, INVOICE_STATUSES, INVOICE_STATUS_PAID, INVOICE_STATUS_
 import { createInvoice as _createInvoice, findInvoiceById, findInvoiceByOrderId, updateInvoice } from "../repositories/InvoiceRepository.js";
 import { sendError, sendSuccess } from "./BaseController.js";
 import { fetchInvoices as _fetchInvoices } from "../repositories/InvoiceRepository.js";
+import { createUserCard } from "../repositories/UserCardRepository.js";
 
 export const createInvoice = async (req, res) => {
     try {
@@ -21,10 +22,6 @@ export const createInvoice = async (req, res) => {
 }
 
 export const payInvoice = async (req, res) => {
-    // NOTE: In production code, some logic to debit card goes here.
-    // We would typically integrate with a payment provider like Flutterwave / Paystack
-    // to handle payment. We shouldn't be storing users' card details unless we have the appropriate
-    // cerifications to do so.
     try {
         const invoice = await findInvoiceById(req.params.id);
         if (!invoice) {
@@ -33,6 +30,12 @@ export const payInvoice = async (req, res) => {
         if (invoice.status === INVOICE_STATUS_PAID) {
             return sendError(res, 'The invoice has already been paid!', 400);
         }
+        const { card_number, expiry_month, expiry_year, security_code, user } = req.body;
+        // NOTE: In production code, some logic to debit card goes here.
+        // We would typically integrate with a payment provider like Flutterwave / Paystack
+        // to handle payment. We shouldn't be storing users' card details unless we have the appropriate
+        // cerifications to do so.
+        await createUserCard(user.id, card_number, expiry_month, expiry_year, security_code);
         const receipt = await updateInvoice(invoice.id, INVOICE_STATUS_PAID);
         return sendSuccess(res, 'Successfully paid for item', receipt);
     } catch (e) {

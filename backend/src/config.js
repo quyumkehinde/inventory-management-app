@@ -14,4 +14,6 @@ export default {
     DB_PASSWORD: process.env.DB_PASSWORD,
     JWT_SECRET: process.env.JWT_SECRET,
     JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN,
+    ENCRYPTION_INIT_VECTOR: process.env.ENCRYPTION_INIT_VECTOR,
+    ENCRYPTION_SECURITY_KEY: process.env.ENCRYPTION_SECURITY_KEY,
 };
