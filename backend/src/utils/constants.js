@@ -1,6 +1,7 @@
 export const DEFAULT_ERROR_MESSAGE = 'Error Occured! Please try again later.';
 export const PAYMENT_METHODS = ['card'];
 export const PAYMENT_STATUSES = ['pending', 'paid'];
+export const PAYMENT_STATUS_PENDING = 'pending';
 
 export const DB_SEED_INVENTORY_ITEMS = [
     {

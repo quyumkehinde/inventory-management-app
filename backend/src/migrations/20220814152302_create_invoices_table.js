@@ -5,7 +5,7 @@ import { PAYMENT_METHODS, PAYMENT_STATUSES } from '../utils/constants.js';
  * @returns { Promise<void> }
  */
 export function up(knex) {
-    return knex.schema.createTable('payments', function (t) {
+    return knex.schema.createTable('invoices', function (t) {
         t.bigIncrements('id').unsigned().primary();
         t.decimal('amount', 19, 4).notNullable();
         t.bigInteger('order_id')
@@ -13,7 +13,7 @@ export function up(knex) {
             .references('id')
             .inTable('orders')
             .onDelete('cascade');
-        t.enum('method', PAYMENT_METHODS).notNullable();
+        t.enum('payment_method', PAYMENT_METHODS).notNullable();
         t.enum('status', PAYMENT_STATUSES).notNullable();
         t.timestamps(true, true);
     });
@@ -24,5 +24,5 @@ export function up(knex) {
  * @returns { Promise<void> }
  */
 export function down(knex) {
-    return knex.schema.dropTable('payments');
+    return knex.schema.dropTable('invoices');
 };

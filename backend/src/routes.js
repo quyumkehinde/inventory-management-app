@@ -29,7 +29,7 @@ routes.use('/merchant', Authenticate, IsMerchant, Router()
 
 // customer routes
 routes.use('/customer', Authenticate, IsCustomer, Router()
-    .post('/order', orderValidator('createOrder'), createOrder)
+    .post('/order', orderValidator('createOrder'), Validate, createOrder)
 );
 
 export default routes;
