@@ -30,12 +30,14 @@ export const payInvoiceNewCard = async (req, res) => {
         if (invoice.status === INVOICE_STATUS_PAID) {
             return sendError(res, 'The invoice has already been paid!', 400);
         }
-        const { card_number, expiry_month, expiry_year, security_code, user } = req.body;
+        const { card_number, expiry_month, expiry_year, security_code, save_card, user } = req.body;
         // NOTE: In production code, some logic to debit card goes here.
         // We would typically integrate with a payment provider like Flutterwave, Paystack, etc
         // to handle payment. We shouldn't be storing users' card details unless we have the appropriate
         // cerifications to do so.
-        await createUserCard(user.id, card_number, expiry_month, expiry_year, security_code);
+        if (save_card) {
+            await createUserCard(user.id, card_number, expiry_month, expiry_year, security_code);
+        }
         const receipt = await updateInvoice(invoice.id, INVOICE_STATUS_PAID);
         return sendSuccess(res, 'Successfully paid for item', receipt);
     } catch (e) {
@@ -133,7 +135,11 @@ export const invoiceValidator = (method) => {
                             throw new Error('The security code is invalid.')
                         }
                         return true;
-                    }),                
+                    }),
+                body('save_card')
+                    .optional()
+                    .isBoolean()
+                    .withMessage('Please provide a boolean value in the save_card field.')             
             ];
         case 'payInvoiceSavedCard':
             return [

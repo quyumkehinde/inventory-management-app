@@ -6,7 +6,6 @@ const initVector = Buffer.from(config.ENCRYPTION_INIT_VECTOR, 'hex');
 const securityKey = config.ENCRYPTION_SECURITY_KEY;
 
 export const encrypt = (text) => {
-    console.log(crypto.randomBytes(32).toString('hex'))
     const cipher = crypto.createCipheriv(ENCRYPTION_ALGORITHM, securityKey, initVector);
     const encrypted = cipher.update(text, 'utf8', 'hex') + cipher.final('hex');
     return encrypted;
