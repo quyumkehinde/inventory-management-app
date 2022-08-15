@@ -11,9 +11,9 @@ export const createInvoice = async (orderId, amount, paymentMethod, status) => {
 };
 
 export const updateInvoice = async (id, status) => {
-    await db('invoices').update({
-        status,
-    }).where('id', id);
+    await db('invoices')
+        .update({ status })
+        .where('id', id);
     return findInvoiceById(id);
 };
 
@@ -23,10 +23,13 @@ export const findInvoiceById = async (id) => {
         .first();
 };
 
-export const fetchInvoices = async (status) => {
-    let query = db('invoices');
+export const fetchInvoices = async (userId, status) => {
+    const orderIds = db('orders')
+        .where('user_id', userId)
+        .select('id');
+    let query = db('invoices')
+        .whereIn('order_id', orderIds);
     if (status) {
-        console.log('hey')
         query.where('status', status)
     }
     return query.select();

@@ -43,7 +43,7 @@ export const payInvoice = async (req, res) => {
 
 export const fetchInvoices = async (req, res) => {
     try {
-        const invoices = await _fetchInvoices(req.query.status);
+        const invoices = await _fetchInvoices(req.body.user.id, req.query.status);
         return sendSuccess(res, 'Successfully fetched invoices.', invoices);
     } catch (e) {
         console.log(e)
