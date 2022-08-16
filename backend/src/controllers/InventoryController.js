@@ -37,7 +37,7 @@ export const deleteItem = async (req, res) => {
         return sendError(res, 'The item ID is invalid.', 400);
     }
     try {
-        const deleted = await _deleteItem(id);
+        const deleted = await _deleteItem(req.params.id);
         const data = { deleted: Boolean(deleted) };
         return sendSuccess(res, 'Successfully deleted inventory item.', data);
     } catch (error) {
