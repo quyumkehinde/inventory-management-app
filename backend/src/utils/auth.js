@@ -34,8 +34,7 @@ export const isValidBearerToken = (token) => {
             return false;
         }
     } catch (error) {
-        logger.error('Error occured while validating token.', { error, req })
-        return sendError(res);
+        return false;
     }
     return true;
 };
