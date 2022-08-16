@@ -33,7 +33,7 @@ export const fetchInvoices = async (userId, status) => {
     if (status) {
         query.where('status', status)
     }
-    return query.select();
+    return query.orderBy('id', 'desc');
 }
 
 export const findInvoiceByOrderId = async (orderId) => {

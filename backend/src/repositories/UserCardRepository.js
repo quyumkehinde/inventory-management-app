@@ -21,7 +21,8 @@ export const findCardById = async (id) => {
 export const fetchCards = async (userId) => {
     const cards = await db('user_cards')
         .where('user_id', userId)
-        .select(['id', 'card_number']);
+        .select(['id', 'card_number'])
+        .orderBy('id', 'desc');;
     // decrypt card_number and replace with it's last 4 digits
     cards.forEach(card => {
         const cardNumber = decrypt(card.card_number);
