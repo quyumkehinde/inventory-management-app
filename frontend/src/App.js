@@ -1,19 +1,22 @@
-import { useState } from "react";
 import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
-import { useJwt } from "react-jwt";
+import { decodeToken, isExpired, useJwt } from "react-jwt";
 import Login from "./Components/Auth/Login";
 import { default as CustomerDashboard } from "./Components/Customer/Dashboard";
 import Orders from "./Components/Customer/Orders";
+import config from "./config";
 
 function App() {
-  const { decodedToken, isExpired } = useJwt();
-  console.log(decodedToken);
+  // localStorage.clear()
+  const decodedToken = decodeToken(config.TOKEN); 
+
+  const isTokenExpired = isExpired(config.TOKEN); 
+  const isCustomer = decodedToken?.userType === 'customer';
   return (
     <div className="wrapper">
-      <h1>Application</h1>
+      <h1 className='p-4 bg-gray-100 mb-10'>Dukka</h1>
       <BrowserRouter>
         <Routes>
-          <Route path="/customer" element={ isExpired && <Navigate to="/login" /> }>
+          <Route path="/customer" element={ (isTokenExpired || !isCustomer) && <Navigate to="/" /> }>
             <Route path="dashboard" element={<CustomerDashboard />} />
           </Route>
           <Route path="/login" element={<Login />} />
