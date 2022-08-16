@@ -1,7 +1,7 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useJwt } from "react-jwt";
+import { useJwt } from 'react-jwt';
 import config from '../../config';
 
 export default function Login() {
@@ -19,7 +19,7 @@ export default function Login() {
             .catch(response => {
                 setError(response.response.data.message);
             });
-    }
+    };
     useEffect(() => {
         !isExpired
             && decodedToken

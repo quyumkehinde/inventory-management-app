@@ -1,9 +1,7 @@
-import React, { useState } from 'react';
-import Login from '../Auth/Login';
+import React from 'react';
 
-export default function Dashboard() {
-    const [token, setToken] = useState();
-    return(
-        <h2>Dashboard</h2>
-    );
+export default function Dashboard(){
+	return (
+		<h2>Welcome, customer</h2>
+	);
 }
