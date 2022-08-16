@@ -36,5 +36,5 @@ export const fetchItems = async (merchantId) => {
     if (merchantId) {
         items.where('merchant_id', merchantId);
     }
-    return items.select();
+    return items.orderBy('id', 'desc');
 };
