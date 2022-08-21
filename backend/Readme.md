@@ -1,6 +1,6 @@
-# Dukka assessment
+# Inventory Management App
 
-My solution repo to the Dukka Payment Integration Engineer role assessment.
+An inventory management system.
 
 ## Project setup
 
